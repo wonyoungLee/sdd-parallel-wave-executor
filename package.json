@@ -1,0 +1,26 @@
+{
+  "name": "sdd-parallel-wave-executor",
+  "version": "0.1.0",
+  "description": "Install the parallel-wave-executor Kiro skill from GitHub with npx.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wonyoungLee/sdd-parallel-wave-executor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wonyoungLee/sdd-parallel-wave-executor/issues"
+  },
+  "homepage": "https://github.com/wonyoungLee/sdd-parallel-wave-executor#readme",
+  "bin": {
+    "sdd-parallel-wave-executor": "./bin/install.cjs"
+  },
+  "files": [
+    ".kiro/skills/parallel-wave-executor/SKILL.md",
+    "bin/install.cjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=16.7"
+  }
+}
