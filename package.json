@@ -1,6 +1,6 @@
 {
   "name": "sdd-parallel-wave-executor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Install SDD parallel execution skills for Kiro, Codex OpenSpec, and Codex Spec Kit with npx.",
   "license": "MIT",
   "repository": {
@@ -18,6 +18,8 @@
     ".kiro/skills/parallel-wave-executor/SKILL.md",
     ".codex/skills/openspec-parallel-apply/SKILL.md",
     ".codex/skills/speckit-parallel-implement/SKILL.md",
+    "examples/openspec-demo.md",
+    "examples/spec-kit-demo.md",
     "bin/install.cjs",
     "README.md",
     "LICENSE"

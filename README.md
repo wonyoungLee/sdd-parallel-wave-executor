@@ -68,6 +68,38 @@ Codex + Spec Kit:
 Run the Spec Kit [P] tasks in parallel while respecting phases.
 ```
 
+## OpenSpec Example
+
+Install the OpenSpec Codex skill in a project that already has an OpenSpec change:
+
+```bash
+npx github:wonyoungLee/sdd-parallel-wave-executor --target openspec
+```
+
+Then ask Codex:
+
+```text
+Use openspec-parallel-apply for openspec/changes/add-dark-mode.
+```
+
+The skill reads `openspec/changes/{change}/tasks.md`, groups independent tasks into ordered apply batches, uses isolated git worktrees for parallel Codex workers when available, merges successful batches back in order, and leaves the result as local uncommitted changes for review.
+
+## Spec Kit Example
+
+Install the Spec Kit Codex skill in a project that already has a generated `specs/{feature}/tasks.md`:
+
+```bash
+npx github:wonyoungLee/sdd-parallel-wave-executor --target speckit
+```
+
+Then ask Codex:
+
+```text
+Use speckit-parallel-implement for specs/001-add-dark-mode.
+```
+
+The skill respects Spec Kit phases, dependencies, user story groupings, and `[P]` task markers. It only parallelizes tasks that are marked or clearly safe to run concurrently, and it downgrades same-file or same-component work to sequential execution.
+
 Korean triggers are also supported:
 
 ```text
@@ -87,6 +119,18 @@ Supported task locations:
 openspec/changes/{change}/tasks.md
 specs/{feature}/tasks.md
 ```
+
+## Why This Matters
+
+Spec-driven development tools such as Kiro, OpenSpec, and GitHub Spec Kit turn feature work into structured task files, but maintainers still spend time coordinating implementation order, checking which tasks can safely run in parallel, reviewing generated changes, and resolving integration risk. This project provides a reusable Codex workflow for that maintenance layer:
+
+- isolate parallel implementation work with git worktrees
+- map each SDD project's native task structure to safe execution units
+- preserve ordered integration so dependency assumptions remain intact
+- leave final changes uncommitted for maintainer review
+- reduce repetitive implementation and review setup work across SDD-based open source projects
+
+See [examples/openspec-demo.md](examples/openspec-demo.md) and [examples/spec-kit-demo.md](examples/spec-kit-demo.md) for reproducible demo flows.
 
 ## Requirements
 
