@@ -4,10 +4,31 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const packageRoot = path.resolve(__dirname, "..");
-const skillName = "parallel-wave-executor";
-const source = path.join(packageRoot, ".kiro", "skills", skillName);
 const targetRoot = process.cwd();
-const target = path.join(targetRoot, ".kiro", "skills", skillName);
+
+const targets = {
+  kiro: {
+    label: "Kiro",
+    source: path.join(packageRoot, ".kiro", "skills", "parallel-wave-executor"),
+    target: path.join(targetRoot, ".kiro", "skills", "parallel-wave-executor"),
+  },
+  openspec: {
+    label: "Codex OpenSpec",
+    source: path.join(packageRoot, ".codex", "skills", "openspec-parallel-apply"),
+    target: path.join(targetRoot, ".codex", "skills", "openspec-parallel-apply"),
+  },
+  speckit: {
+    label: "Codex Spec Kit",
+    source: path.join(packageRoot, ".codex", "skills", "speckit-parallel-implement"),
+    target: path.join(targetRoot, ".codex", "skills", "speckit-parallel-implement"),
+  },
+};
+
+const aliases = {
+  "spec-kit": "speckit",
+  spec: "speckit",
+  codex: "codex",
+};
 
 function fail(message) {
   console.error(`Error: ${message}`);
@@ -18,22 +39,98 @@ function samePath(left, right) {
   return path.resolve(left) === path.resolve(right);
 }
 
-if (!fs.existsSync(source)) {
-  fail(`Skill source not found: ${source}`);
+function usage() {
+  console.log(`Usage: npx github:wonyoungLee/sdd-parallel-wave-executor [--target <target>]
+
+Targets:
+  kiro       Install .kiro/skills/parallel-wave-executor (default)
+  openspec   Install .codex/skills/openspec-parallel-apply
+  speckit    Install .codex/skills/speckit-parallel-implement
+  codex      Install both Codex skills: openspec and speckit
+  all        Install kiro, openspec, and speckit
+
+Examples:
+  npx github:wonyoungLee/sdd-parallel-wave-executor
+  npx github:wonyoungLee/sdd-parallel-wave-executor --target openspec
+  npx github:wonyoungLee/sdd-parallel-wave-executor --target speckit
+  npx github:wonyoungLee/sdd-parallel-wave-executor --target codex`);
 }
 
-if (!fs.existsSync(path.join(source, "SKILL.md"))) {
-  fail(`SKILL.md not found in skill source: ${source}`);
+function parseTarget(argv) {
+  let value = "kiro";
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === "--help" || arg === "-h") {
+      usage();
+      process.exit(0);
+    }
+
+    if (arg === "--target" || arg === "-t") {
+      value = argv[index + 1];
+      index += 1;
+      continue;
+    }
+
+    if (arg.startsWith("--target=")) {
+      value = arg.slice("--target=".length);
+      continue;
+    }
+
+    if (!arg.startsWith("-")) {
+      value = arg;
+    }
+  }
+
+  if (!value) {
+    fail("Missing target value.");
+  }
+
+  const normalized = aliases[value] || value;
+
+  if (normalized === "all") {
+    return Object.keys(targets);
+  }
+
+  if (normalized === "codex") {
+    return ["openspec", "speckit"];
+  }
+
+  if (!targets[normalized]) {
+    fail(`Unknown target "${value}". Run with --help to see valid targets.`);
+  }
+
+  return [normalized];
 }
 
-if (samePath(source, target)) {
-  console.log(`parallel-wave-executor skill is already available at ${target}`);
-  process.exit(0);
+function installTarget(key) {
+  const entry = targets[key];
+
+  if (!fs.existsSync(entry.source)) {
+    fail(`Skill source not found: ${entry.source}`);
+  }
+
+  if (!fs.existsSync(path.join(entry.source, "SKILL.md"))) {
+    fail(`SKILL.md not found in skill source: ${entry.source}`);
+  }
+
+  if (samePath(entry.source, entry.target)) {
+    console.log(`${entry.label} skill is already available at ${entry.target}`);
+    return;
+  }
+
+  fs.mkdirSync(path.dirname(entry.target), { recursive: true });
+  fs.rmSync(entry.target, { recursive: true, force: true });
+  fs.cpSync(entry.source, entry.target, { recursive: true });
+
+  console.log(`Installed ${entry.label} skill to ${entry.target}`);
 }
 
-fs.mkdirSync(path.dirname(target), { recursive: true });
-fs.rmSync(target, { recursive: true, force: true });
-fs.cpSync(source, target, { recursive: true });
+const selectedTargets = parseTarget(process.argv.slice(2));
 
-console.log(`Installed ${skillName} skill to ${target}`);
+for (const selectedTarget of selectedTargets) {
+  installTarget(selectedTarget);
+}
+
 console.log("Restart or reload your Kiro/Codex session if the skill list does not update immediately.");
