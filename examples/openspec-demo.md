@@ -59,6 +59,37 @@ git diff
 
 You should see local uncommitted changes on the original branch. No remote push should have occurred.
 
+## Verified Install Smoke Test
+
+The installer was verified against a minimal sample repository with this structure:
+
+```text
+openspec/changes/add-dark-mode/
+├── proposal.md
+├── design.md
+├── specs/ui/spec.md
+└── tasks.md
+```
+
+Command:
+
+```bash
+node bin/install.cjs --target openspec
+```
+
+Observed output:
+
+```text
+Installed Codex OpenSpec skill to /private/tmp/pwe-smoke-openspec/.codex/skills/openspec-parallel-apply
+Restart or reload your Kiro/Codex session if the skill list does not update immediately.
+```
+
+Installed file:
+
+```text
+.codex/skills/openspec-parallel-apply/SKILL.md
+```
+
 ## Notes
 
 OpenSpec does not have a native "wave" concept. This skill uses OpenSpec terminology and derives ordered apply batches from the change's `tasks.md`.

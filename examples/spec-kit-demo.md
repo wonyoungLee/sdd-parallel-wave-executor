@@ -59,6 +59,36 @@ git diff
 
 You should see local uncommitted changes on the original branch. No remote push should have occurred.
 
+## Verified Install Smoke Test
+
+The installer was verified against a minimal sample repository with this structure:
+
+```text
+specs/001-add-dark-mode/
+├── spec.md
+├── plan.md
+└── tasks.md
+```
+
+Command:
+
+```bash
+node bin/install.cjs --target speckit
+```
+
+Observed output:
+
+```text
+Installed Codex Spec Kit skill to /private/tmp/pwe-smoke-speckit/.codex/skills/speckit-parallel-implement
+Restart or reload your Kiro/Codex session if the skill list does not update immediately.
+```
+
+Installed file:
+
+```text
+.codex/skills/speckit-parallel-implement/SKILL.md
+```
+
 ## Notes
 
 Spec Kit does not have a native "wave" concept. This skill uses Spec Kit terminology and parallelizes only `[P]` tasks or clearly independent task groups.
